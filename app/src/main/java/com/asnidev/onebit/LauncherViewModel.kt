@@ -264,6 +264,8 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
 
     /** Debug builds: which apps ship a one-colour (themed) icon, to logcat (`--ez monostats true`). */
     fun monoStats() {
+        // One-colour icon layers only exist from Android 13.
+        if (android.os.Build.VERSION.SDK_INT < 33) return
         scope.launch(kotlinx.coroutines.Dispatchers.Default) {
             val list = apps.first { it.isNotEmpty() }
             val with = list.filter { repo.hasMonochrome(it.key) }
