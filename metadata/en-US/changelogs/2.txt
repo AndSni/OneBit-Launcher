@@ -1,0 +1,1 @@
+New app ID com.onebitlauncher.app: com.onebit.app already belongs to another app. Android treats this as a separate app, so install it fresh; settings from 0.1.0 do not carry over.
