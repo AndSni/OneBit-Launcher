@@ -1,0 +1,37 @@
+Categories:
+  - Launcher
+  - Theming
+License: GPL-3.0-only
+AuthorName: AndSni
+SourceCode: https://github.com/AndSni/OneBit-Launcher
+IssueTracker: https://github.com/AndSni/OneBit-Launcher/issues
+Changelog: 
+  https://github.com/AndSni/OneBit-Launcher/blob/HEAD/metadata/en-US/changelogs/%c.txt
+
+# Summary/Description come from the fastlane-structured metadata/en-US/ in this repo.
+AutoName: OneBit
+
+RepoType: git
+Repo: https://github.com/AndSni/OneBit-Launcher.git
+# Each version tag publishes a GitHub Release with the developer-signed APK
+# (.github/workflows/release-tag.yml), for F-Droid's reproducible-build check.
+Binaries: 
+  https://github.com/AndSni/OneBit-Launcher/releases/download/v%v/OneBit-Launcher.apk
+
+Builds:
+  - versionName: 0.1.0
+    versionCode: 1
+    commit: PINNED_AFTER_TAG
+    # The Gradle root is the repo root; F-Droid looks for the output APK under
+    # <subdir>/build/outputs/apk, so this must be the app module itself.
+    subdir: app
+    gradle:
+      - yes
+
+AllowedAPKSigningKeys: 10536061289d77dd89b4ae1e2a14759c261ddd07517a1a3c7843c0b8164e5d68
+
+AutoUpdateMode: Version
+# Only vX.Y.Z tags are releases; `latest` is CI's rolling pre-release build.
+UpdateCheckMode: Tags ^v[0-9.]+$
+CurrentVersion: 0.1.0
+CurrentVersionCode: 1

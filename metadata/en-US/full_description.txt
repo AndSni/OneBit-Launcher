@@ -1,0 +1,15 @@
+OneBit puts your apps in a classic monochrome desktop window, with a menu bar, a scroll bar, an info line and a taskbar. Every icon can be redrawn in one bit: pattern dithering, grain, line art or the app's own silhouette, or swapped for one of 2,000 bundled pixel icons.
+
+<b>Desktop</b>: A menu bar with a clock; a home window with boxed or striped chrome, an info line (storage, time, battery, item count) and real pages with a scroll bar; drag icons to move them; a zoom-rectangle launch animation.
+
+<b>Taskbar and drawer</b>: Zero to three taskbar buttons (hold one to assign it); swipe up for an app list with search; swipe down for notifications.
+
+<b>One-bit icons</b>: Pattern dither (each colour its own pattern, editable), 1-bit grain, line art, silhouette from the app's themed icon, pixel and 16-colour styles; icon packs (ADW/Nova format); any app's icon replaceable by a pixelarticons or Kenney 1-bit glyph.
+
+<b>Your look</b>: Eight presets, four colours to set yourself, twelve desk patterns, five pixel fonts, grid size, icon size and label placement, window size and position.
+
+<b>Your apps</b>: Rename, hide, app info and uninstall from each app's box; work-profile apps included.
+
+<b>Privacy</b>: OneBit has no internet permission: it cannot connect anywhere. No account, no analytics, no ads, no tracking.
+
+Source code and issues: https://github.com/AndSni/OneBit-Launcher

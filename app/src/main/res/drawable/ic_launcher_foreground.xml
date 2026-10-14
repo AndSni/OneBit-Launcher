@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A 1-bit window: striped title bar, close box, and a "1". -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M24.25,24.25h56v3.5h-56zM24.25,27.75h3.5v3.5h-3.5zM76.75,27.75h7v3.5h-7zM24.25,31.25h3.5v3.5h-3.5zM31.25,31.25h10.5v3.5h-10.5zM45.25,31.25h28v3.5h-28zM76.75,31.25h7v3.5h-7zM24.25,34.75h3.5v3.5h-3.5zM31.25,34.75h3.5v3.5h-3.5zM38.25,34.75h3.5v3.5h-3.5zM76.75,34.75h7v3.5h-7zM24.25,38.25h3.5v3.5h-3.5zM31.25,38.25h10.5v3.5h-10.5zM45.25,38.25h28v3.5h-28zM76.75,38.25h7v3.5h-7zM24.25,41.75h3.5v3.5h-3.5zM76.75,41.75h7v3.5h-7zM24.25,45.25h56v3.5h-56zM24.25,48.75h3.5v3.5h-3.5zM76.75,48.75h7v3.5h-7zM24.25,52.25h3.5v3.5h-3.5zM48.75,52.25h7v3.5h-7zM76.75,52.25h7v3.5h-7zM24.25,55.75h3.5v3.5h-3.5zM45.25,55.75h10.5v3.5h-10.5zM76.75,55.75h7v3.5h-7zM24.25,59.25h3.5v3.5h-3.5zM41.75,59.25h14v3.5h-14zM76.75,59.25h7v3.5h-7zM24.25,62.75h3.5v3.5h-3.5zM48.75,62.75h7v3.5h-7zM76.75,62.75h7v3.5h-7zM24.25,66.25h3.5v3.5h-3.5zM48.75,66.25h7v3.5h-7zM76.75,66.25h7v3.5h-7zM24.25,69.75h3.5v3.5h-3.5zM41.75,69.75h21v3.5h-21zM76.75,69.75h7v3.5h-7zM24.25,73.25h3.5v3.5h-3.5zM76.75,73.25h7v3.5h-7zM24.25,76.75h56v3.5h-56zM27.75,80.25h56v3.5h-56z" />
+</vector>

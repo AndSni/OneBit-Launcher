@@ -1,0 +1,1 @@
+First release: the one-bit desktop with menu bar, paged home window, taskbar and app list; pattern-dither, grain, line-art, silhouette, pixel and 16-colour icon styles; icon packs and 2,000 bundled pixel icons for any app; eight presets, custom colours, desk patterns and pixel fonts.

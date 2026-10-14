@@ -1,0 +1,10 @@
+<resources>
+    <style name="Theme.OneBit" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/desk</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowShowWallpaper">false</item>
+    </style>
+    <color name="desk">#FF00A800</color>
+    <color name="icon_bg">#FFFFFFFF</color>
+</resources>
