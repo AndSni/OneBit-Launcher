@@ -1,0 +1,2 @@
+Reproducible builds: a newer code shrinker (R8 8.9.35) gives the same APK from every clean build.
+From 0.1.2: better 1-bit icons (themed icons that come out as a few dots or mostly half-tone are enlarged or converted from the colour icon; an icon that loses almost everything without its plate keeps it). New Support section in Options and a Ko-fi button in About; both open in your browser.
