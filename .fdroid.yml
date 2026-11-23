@@ -19,7 +19,7 @@ Binaries:
 Builds:
   - versionName: 0.1.3
     versionCode: 4
-    commit: PENDING
+    commit: c08d1dcc700e850fba4ab710a639a0e4f5e0f487
     subdir: app
     gradle:
       - yes
