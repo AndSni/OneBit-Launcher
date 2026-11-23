@@ -9,6 +9,7 @@ import android.util.LruCache
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import com.asnidev.onebit.data.IconStyle
+import kotlin.math.roundToInt
 
 /** Everything that changes how one icon looks. */
 data class IconSpec(
@@ -79,7 +80,7 @@ class IconRenderer {
      * The icon at [IconSpec.res] pixels with hard alpha, before any style:
      * the right layer, supersampled, with a free border for the outline.
      */
-    fun prepare(drawable: Drawable, spec: IconSpec): IntArray {
+    fun prepare(drawable: Drawable, spec: IconSpec, zoom: Float = 1f): IntArray {
         val n = spec.res
         // With an outline the picture leaves a pixel free all round for it.
         val inner = if (spec.outline && spec.style != IconStyle.MONO) n - 2 else n
@@ -88,31 +89,40 @@ class IconRenderer {
             spec.stripBackground -> LayerChoice.FOREGROUND
             else -> LayerChoice.WHOLE
         }
-        val small = RetroPixels.downsample(raster(drawable, inner * SUPERSAMPLE, layer), inner * SUPERSAMPLE, SUPERSAMPLE)
+        val small = RetroPixels.downsample(raster(drawable, inner * SUPERSAMPLE, layer, zoom), inner * SUPERSAMPLE, SUPERSAMPLE)
         val px = IntArray(n * n)
         val off = (n - inner) / 2
         for (y in 0 until inner) small.copyInto(px, (y + off) * n + off, y * inner, (y + 1) * inner)
         return RetroPixels.hardAlpha(px)
     }
 
-    /** The one-colour layer (or the foreground, if there is none) in ink, its shaded areas half-toned. */
-    fun mono(drawable: Drawable, spec: IconSpec): IntArray =
-        RetroPixels.monoTone(raster(drawable, spec.res * SUPERSAMPLE, LayerChoice.MONOCHROME), spec.res * SUPERSAMPLE, SUPERSAMPLE, spec.ink, spec.paper)
+    /**
+     * The one-colour layer (or the foreground, if there is none) in ink, its
+     * shaded areas half-toned; a small mark is drawn larger to fill the tile.
+     */
+    fun mono(drawable: Drawable, spec: IconSpec): IntArray {
+        val side = spec.res * SUPERSAMPLE
+        var big = raster(drawable, side, LayerChoice.MONOCHROME)
+        val bounds = RetroPixels.shapeBounds(big, side)
+        val zoom = RetroPixels.fitZoom(bounds, side)
+        if (zoom > 1f && bounds != null) {
+            big = raster(drawable, side, LayerChoice.MONOCHROME, zoom, (bounds[0] + bounds[2]) / 2f, (bounds[1] + bounds[3]) / 2f)
+        }
+        return RetroPixels.monoTone(big, side, SUPERSAMPLE, spec.ink, spec.paper)
+    }
 
-    private fun convert(drawable: Drawable, spec: IconSpec): Pixels {
+    private fun convert(drawable: Drawable, spec: IconSpec, zoom: Float = 1f): Pixels {
         // The designer's own one-colour icon beats any conversion of the colour one:
-        // the 1-bit styles draw it as it is (in ink) whenever the app ships one.
+        // the 1-bit styles draw it as it is (in ink) whenever the app ships one,
+        // unless it comes out as a few dots or mostly half-tone at this size.
         if (spec.preferMono && spec.style in ONE_BIT && hasMonochrome(drawable)) {
-            return convert(drawable, spec.copy(style = IconStyle.MONO))
+            val px = mono(drawable, spec)
+            if (RetroPixels.isLegible(px, spec.ink, spec.paper)) return monoPixels(px, spec)
         }
+        if (spec.style == IconStyle.MONO) return monoPixels(mono(drawable, spec), spec)
         val n = spec.res
-        if (spec.style == IconStyle.MONO) {
-            var px = mono(drawable, spec)
-            if (spec.selected) px = RetroPixels.invertTile(px, spec.ink, spec.paper)
-            return Pixels(px, n)
-        }
-        val inner = if (spec.outline && spec.style != IconStyle.MONO) n - 2 else n
-        var px = prepare(drawable, spec)
+        val inner = if (spec.outline) n - 2 else n
+        var px = prepare(drawable, spec, zoom)
         val ink = spec.ink
         val paper = spec.paper
         px = when (spec.style) {
@@ -124,6 +134,13 @@ class IconRenderer {
             IconStyle.COLORS16 -> RetroPixels.pixelate(px, RetroPixels.COLORS16)
             IconStyle.ORIGINAL -> px
         }
+        // Without its plate some icons shrink to a few details (a clock's hands)
+        // or to nothing; those keep the plate.
+        if (spec.style in ONE_BIT && spec.stripBackground && !RetroPixels.hasBody(px)) {
+            // A whole icon fills the tile edge to edge; drawn smaller, it matches
+            // the plate-less icons beside it.
+            return convert(drawable, spec.copy(stripBackground = false, preferMono = false), PLATE_ZOOM)
+        }
         if (inner < n) px = RetroPixels.outline(px, n, ink)
         if (spec.selected) {
             px = when (spec.style) {
@@ -133,6 +150,12 @@ class IconRenderer {
         }
         return Pixels(px, n)
     }
+
+    /** Debug icon sheet: an app icon exactly as [render] draws it, as pixels. */
+    fun converted(drawable: Drawable, spec: IconSpec): IntArray = convert(drawable, spec).pixels
+
+    private fun monoPixels(px: IntArray, spec: IconSpec): Pixels =
+        Pixels(if (spec.selected) RetroPixels.invertTile(px, spec.ink, spec.paper) else px, spec.res)
 
     /**
      * A bundled pixel icon in ink, blown up by a whole number of pixels to fit
@@ -184,8 +207,21 @@ class IconRenderer {
 
     private enum class LayerChoice { WHOLE, FOREGROUND, MONOCHROME }
 
-    /** The icon drawn into a [side]×[side] ARGB array. */
-    private fun raster(drawable: Drawable, side: Int, choice: LayerChoice): IntArray {
+    /**
+     * The icon drawn into a [side]×[side] ARGB array. With a [zoom] other than 1
+     * the picture is scaled that much, and the point ([cx], [cy]) of the normal
+     * drawing moves to the middle.
+     */
+    private fun raster(
+        drawable: Drawable,
+        side: Int,
+        choice: LayerChoice,
+        zoom: Float = 1f,
+        cx: Float = side / 2f,
+        cy: Float = side / 2f,
+    ): IntArray {
+        fun mapX(v: Int) = (side / 2f + (v - cx) * zoom).roundToInt()
+        fun mapY(v: Int) = (side / 2f + (v - cy) * zoom).roundToInt()
         val bitmap = Bitmap.createBitmap(side, side, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         val adaptive = drawable as? AdaptiveIconDrawable
@@ -200,12 +236,12 @@ class IconRenderer {
             // so it's drawn half as large again to fill the square with that middle.
             val pad = side / 4
             val old = layer.copyBounds()
-            layer.setBounds(-pad, -pad, side + pad, side + pad)
+            layer.setBounds(mapX(-pad), mapY(-pad), mapX(side + pad), mapY(side + pad))
             layer.draw(canvas)
             layer.bounds = old
         } else {
             val old = drawable.copyBounds()
-            drawable.setBounds(0, 0, side, side)
+            drawable.setBounds(mapX(0), mapY(0), mapX(side), mapY(side))
             drawable.draw(canvas)
             drawable.bounds = old
         }
@@ -219,6 +255,7 @@ class IconRenderer {
         /** Styles that come out in ink and paper only, where a one-colour icon fits as it is. */
         val ONE_BIT = setOf(IconStyle.DITHER, IconStyle.GRAIN, IconStyle.THRESHOLD)
         const val SUPERSAMPLE = 4
+        const val PLATE_ZOOM = 0.8f
         const val ORIGINAL_SIDE = 144
     }
 }

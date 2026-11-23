@@ -247,6 +247,15 @@ fun SettingsWindow(vm: LauncherViewModel, prefs: Prefs) {
             }
             Spacer(Modifier.height(r.u * 4))
             RetroButton("About OneBit", { vm.dialog = Dialog.About }, Modifier.fillMaxWidth())
+
+            Heading("Support OneBit")
+            RetroText(
+                "OneBit is free, open source and has no ads. If you enjoy it, you can buy the developer a coffee on Ko-fi. The page opens in your browser.",
+                Modifier.padding(bottom = r.u * 4), maxLines = 6,
+            )
+            RetroButton("Buy me a coffee (Ko-fi)", { SystemActions.openUrl(context, SystemActions.KOFI_URL) }, Modifier.fillMaxWidth())
+            Spacer(Modifier.height(r.u * 4))
+            RetroButton("Source code and issues", { SystemActions.openUrl(context, SystemActions.SOURCE_URL) }, Modifier.fillMaxWidth())
             RetroText("Version ${BuildConfig.VERSION_NAME}", Modifier.padding(vertical = r.u * 6), color = r.ink.copy(alpha = 0.6f))
         }
     }

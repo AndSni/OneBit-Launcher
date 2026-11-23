@@ -1,0 +1,1 @@
+Better 1-bit icons: a themed icon that comes out as a few dots or mostly half-tone (a clock's hands, a small sparkle) is now enlarged or converted from the colour icon, and an icon that loses almost everything with its plate keeps the plate. New Support section in Options and a Ko-fi button in About; both links open in your browser. New screenshots.

@@ -223,7 +223,7 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
             val scale = 3
             val cell = res * scale + 8
             val themes = listOf(0xFF000000.toInt() to 0xFFFFFFFF.toInt(), 0xFF33FF66.toInt() to 0xFF001A08.toInt())
-            val cols = 6
+            val cols = 7
             val sheet = android.graphics.Bitmap.createBitmap(cell * cols * themes.size + 16, cell * list.size, android.graphics.Bitmap.Config.ARGB_8888)
             val canvas = android.graphics.Canvas(sheet)
             canvas.drawColor(0xFF808080.toInt())
@@ -244,7 +244,9 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
                         com.asnidev.onebit.icons.RetroPixels.lineArt(base, res, ink, paper),
                         // What the 1-bit styles now draw for an app with a one-colour icon (blank if it has none).
                         if (repo.hasMonochrome(app.key)) icons.mono(d, spec) else IntArray(res * res),
-                    ).mapIndexed { i, v -> if (i == 0 || i == 5 || !prefs.value.iconOutline) v else com.asnidev.onebit.icons.RetroPixels.outline(v, res, ink) }
+                        // The final icon as the launcher draws it (current style, fallbacks included).
+                        icons.converted(d, spec.copy(style = prefs.value.iconStyle.takeIf { it != IconStyle.ORIGINAL } ?: IconStyle.DITHER)),
+                    ).mapIndexed { i, v -> if (i == 0 || i >= 5 || !prefs.value.iconOutline) v else com.asnidev.onebit.icons.RetroPixels.outline(v, res, ink) }
                     for ((ci, v) in variants.withIndex()) {
                         val x = (ti * cols + ci) * cell + ti * 16
                         val y = row * cell

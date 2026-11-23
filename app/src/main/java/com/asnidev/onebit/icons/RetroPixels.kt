@@ -150,6 +150,64 @@ object RetroPixels {
         }
     }
 
+    /**
+     * The box round everything at least 20% opaque in [px] (side [side]), as
+     * left, top, right, bottom (right and bottom exclusive); null when empty.
+     */
+    fun shapeBounds(px: IntArray, side: Int): IntArray? {
+        var l = side; var t = side; var r = -1; var b = -1
+        for (y in 0 until side) for (x in 0 until side) {
+            if ((px[y * side + x] ushr 24) >= 51) {
+                if (x < l) l = x
+                if (x > r) r = x
+                if (y < t) t = y
+                if (y > b) b = y
+            }
+        }
+        return if (r < 0) null else intArrayOf(l, t, r + 1, b + 1)
+    }
+
+    /**
+     * How much to enlarge a one-colour shape: 1 when its longer side already
+     * fills [MIN_FILL] of the tile, else enough to make it fill [FIT_FILL].
+     * Some designers draw their themed icon as a small mark (a sparkle) that
+     * comes out as a dot or two at list size.
+     */
+    fun fitZoom(bounds: IntArray?, side: Int): Float {
+        if (bounds == null) return 1f
+        val longest = maxOf(bounds[2] - bounds[0], bounds[3] - bounds[1]).toFloat()
+        return if (longest >= side * MIN_FILL) 1f else side * FIT_FILL / longest
+    }
+
+    private const val MIN_FILL = 0.5f
+    private const val FIT_FILL = 0.62f
+
+    /**
+     * Whether a converted 1-bit icon still reads as a picture: enough solid ink
+     * ([MIN_INK] of the tile) and not mostly half-tone. [px] holds [ink],
+     * [paper] and transparent pixels; [monoTone]'s half-tone is a checkerboard,
+     * so each paper pixel there stands for a pair of half-tone pixels.
+     */
+    fun isLegible(px: IntArray, ink: Int, paper: Int): Boolean {
+        var inks = 0; var papers = 0
+        for (c in px) {
+            if (c == ink) inks++ else if (c == paper) papers++
+        }
+        val solid = inks - papers
+        return solid >= px.size * MIN_INK && papers * 2 <= solid
+    }
+
+    private const val MIN_INK = 0.06f
+
+    /**
+     * Whether the picture covers at least [MIN_BODY] of the tile. A colour icon
+     * without its plate can shrink to a few light details (a clock's hands) or
+     * to nothing at all; a pale but large shape (a folder) still counts.
+     */
+    fun hasBody(px: IntArray): Boolean = px.count { isOpaque(it) } >= px.size * MIN_BODY
+
+    private const val MIN_BODY = 0.1f
+
     /** The opaque shape in ink. */
     fun silhouette(px: IntArray, ink: Int): IntArray = IntArray(px.size) { if (isOpaque(px[it])) ink else 0 }
 

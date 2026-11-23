@@ -106,4 +106,45 @@ class RetroPixelsTest {
         assertEquals(white, out[1]) // shaded: half-tone, and (1 + 0) is odd, so paper here
         assertEquals(0, out[2])     // a sliver of blend is not part of the shape
     }
+
+    @Test
+    fun shapeBoundsFindsTheMarkAndIgnoresFaintPixels() {
+        val side = 10
+        val px = IntArray(side * side)
+        px[2 * side + 3] = black            // (3, 2)
+        px[5 * side + 6] = black            // (6, 5)
+        px[9 * side + 9] = 0x20000000       // below 20% opacity: not part of the shape
+        assertArrayEquals(intArrayOf(3, 2, 7, 6), RetroPixels.shapeBounds(px, side))
+        assertEquals(null, RetroPixels.shapeBounds(IntArray(side * side), side))
+    }
+
+    @Test
+    fun fitZoomEnlargesOnlySmallMarks() {
+        assertEquals(1f, RetroPixels.fitZoom(intArrayOf(0, 0, 60, 30), 100), 0f)   // already 60% wide
+        assertEquals(1f, RetroPixels.fitZoom(null, 100), 0f)
+        assertEquals(62f / 20f, RetroPixels.fitZoom(intArrayOf(40, 40, 60, 55), 100), 1e-4f)
+    }
+
+    @Test
+    fun legibilityRejectsDotsAndHalfTone() {
+        val n = 16
+        // A solid 6x6 block: 36 of 256 pixels, about 14%.
+        val solid = IntArray(n * n) { i -> if (i % n < 6 && i / n < 6) black else 0 }
+        assertTrue(RetroPixels.isLegible(solid, black, white))
+        // A clock's two hands: a few pixels.
+        val dots = IntArray(n * n).also { it[0] = black; it[17] = black; it[34] = black }
+        assertEquals(false, RetroPixels.isLegible(dots, black, white))
+        // A large half-toned area with a little solid ink.
+        val halftone = IntArray(n * n) { i -> if ((i % n + i / n) % 2 == 0) black else white }
+        assertEquals(false, RetroPixels.isLegible(halftone, black, white))
+    }
+
+    @Test
+    fun bodyCountsInkAndPaperButNotTransparency() {
+        val n = 10
+        val pale = IntArray(n * n) { i -> if (i < 30) white else 0 }   // a pale shape, 30%
+        assertTrue(RetroPixels.hasBody(pale))
+        val hands = IntArray(n * n) { i -> if (i < 5) black else 0 }   // 5%
+        assertEquals(false, RetroPixels.hasBody(hands))
+    }
 }

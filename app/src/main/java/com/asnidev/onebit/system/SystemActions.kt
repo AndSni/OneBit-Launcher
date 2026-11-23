@@ -5,6 +5,7 @@ import android.app.Activity
 import android.app.role.RoleManager
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.util.Log
@@ -21,6 +22,14 @@ object SystemActions {
     }
 
     fun openSettings(context: Context) = open(context, Intent(Settings.ACTION_SETTINGS))
+
+    /** Where a coffee for the developer goes. OneBit has no internet permission: the browser opens it. */
+    const val KOFI_URL = "https://ko-fi.com/asnidev"
+    const val SOURCE_URL = "https://github.com/AndSni/OneBit-Launcher"
+
+    /** Opens [url] in the browser; false when there is none. */
+    fun openUrl(context: Context, url: String): Boolean =
+        open(context, Intent(Intent.ACTION_VIEW, Uri.parse(url)).addCategory(Intent.CATEGORY_BROWSABLE))
 
     fun isDefaultLauncher(context: Context): Boolean {
         val home = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME)

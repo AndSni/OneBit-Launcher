@@ -23,13 +23,14 @@ OneBit puts your apps in a classic monochrome desktop window, with a menu bar, a
 
 - **GitHub:** download `OneBit-Launcher.apk` from the [latest release](https://github.com/AndSni/OneBit-Launcher/releases/latest) and open it
   (allow "install unknown apps"). Then press Home and pick OneBit.
-- **F-Droid:** not submitted yet.
+- **F-Droid:** submitted, in review.
 
 Requires Android 8.0 (API 26) or newer.
 
 ## Privacy
 
 OneBit has no internet permission: it cannot connect anywhere. No account, no analytics, no ads, no tracking.
+The Ko-fi and source code buttons in Options open those pages in your browser.
 
 | Permission | Used for |
 |---|---|
@@ -53,7 +54,12 @@ local `assembleRelease` produces an unsigned APK.
 2. Commit and push to `main` (CI publishes a rolling `latest` pre-release).
 3. Tag that commit `vX.Y.Z` and push the tag: `release-tag.yml` publishes the permanent release
    with `OneBit-Launcher.apk`, the file `.fdroid.yml`'s `Binaries` points at.
-4. Pin the tagged commit's full hash in `.fdroid.yml` (`commit:`), bump `CurrentVersion`.
+4. Pin the tagged commit's full hash in `.fdroid.yml` (`commit:`), bump `CurrentVersion` and
+   `CurrentVersionCode`. Keep the file in fdroiddata's `rewritemeta` format: no comments,
+   `Changelog: ` and `Binaries: ` with a trailing space and the URL on the next line.
+5. Download the `Binaries` URL and compare it with a clean local build of the tag (all files
+   outside `META-INF` must match).
+6. New store screenshots or texts need a new version: F-Droid reads them from the built commit.
 
 ## Support OneBit
 

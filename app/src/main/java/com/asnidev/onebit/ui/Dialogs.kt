@@ -24,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.asnidev.onebit.BuildConfig
@@ -39,6 +40,7 @@ import com.asnidev.onebit.data.Prefs
 import com.asnidev.onebit.icons.GlyphLibrary
 import com.asnidev.onebit.icons.IconPacks
 import com.asnidev.onebit.icons.IconRef
+import com.asnidev.onebit.system.SystemActions
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -294,7 +296,11 @@ private fun AboutBox(dismiss: () -> Unit) {
                 style = r.text.copy(fontSize = r.text.fontSize * 0.8f),
             )
             Spacer(Modifier.height(r.u * 8))
-            RetroButton("OK", dismiss, Modifier.width(r.line * 5), default = true)
+            val context = LocalContext.current
+            Row(horizontalArrangement = Arrangement.spacedBy(r.u * 6)) {
+                RetroButton("Ko-fi", { SystemActions.openUrl(context, SystemActions.KOFI_URL) }, Modifier.width(r.line * 5))
+                RetroButton("OK", dismiss, Modifier.width(r.line * 5), default = true)
+            }
         }
     }
 }

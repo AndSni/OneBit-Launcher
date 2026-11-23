@@ -10,6 +10,6 @@ OneBit puts your apps in a classic monochrome desktop window, with a menu bar, a
 
 <b>Your apps</b>: Rename, hide, app info and uninstall from each app's box; work-profile apps included.
 
-<b>Privacy</b>: OneBit has no internet permission: it cannot connect anywhere. No account, no analytics, no ads, no tracking.
+<b>Privacy</b>: OneBit has no internet permission: it cannot connect anywhere. No account, no analytics, no ads, no tracking. The Ko-fi and source code buttons in Options open those pages in your browser.
 
 Source code and issues: https://github.com/AndSni/OneBit-Launcher
